@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">CityLines</string>
+
+    <string-array name="tabs_array">
+        <item>Nearby</item>
+        <item>City</item>
+        <item>Intercity</item>
+        <item>Configure</item>
+    </string-array>
+    
+    <string name="state_prompt">State</string>
+    <string name="municipality_prompt">Municipality</string>
+    <string name="city_prompt">City</string>
+    
+    <string name="destination">Destination:</string>
+    <string name="date">Date:</string>
+    <string name="selectdate">Select date</string>
+    <string name="timetable">Timetable:</string>
+    
+    <string name="departures">Departures:</string>
+    <string name="arrivals">Arrivals:</string>
+    <string name="station">Station:</string>
+    <string name="gate">Gate:</string>
+    <string name="line">Line:</string>
+    <string name="phone">Phone:</string>
+</resources>
