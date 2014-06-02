@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 import java.util.List;
-import java.util.Map;
 import org.citylines.R;
 
 public class ExpandableListAdapter extends BaseExpandableListAdapter {
@@ -29,14 +28,10 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
  
     private final Context context;
     private final List<CarrierLine> carrierLines; // header titles
-    // child data in format of header title, child title
-    private final Map<Long, List<CarrierLineDeparture>> carrierLineDepartures;
  
-    public ExpandableListAdapter(Context context, List<CarrierLine> carrierLines,
-            Map<Long, List<CarrierLineDeparture>> carrierLineDepartures) {
+    public ExpandableListAdapter(Context context, List<CarrierLine> carrierLines) {
         this.context = context;
         this.carrierLines = carrierLines;
-        this.carrierLineDepartures = carrierLineDepartures;
     }
     
     @Override
@@ -44,8 +39,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         if (childPosition == 0)
             return null;
         
-        return this.carrierLineDepartures.get(this.carrierLines.get(groupPosition).id)
-                .get(childPosition-1);
+        return this.carrierLines.get(groupPosition).getDepartures().get(childPosition-1);
     }
  
     @Override
@@ -94,20 +88,20 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
             ChildHeaderViewHolder headerViewHolder = (ChildHeaderViewHolder) viewHolder;
             headerViewHolder.station.setText(
                     context.getResources().getString(R.string.station) 
-                            + " " + group.station);
+                            + " " + group.getDepartureStation());
             headerViewHolder.gate.setText(
                     context.getResources().getString(R.string.gate) 
-                            + " " + ((group.gate != null) ? group.gate : "-"));
+                            + " " + group.getGate());
             headerViewHolder.phone.setText(
                     context.getResources().getString(R.string.phone) 
-                            + " " + ((group.phone != null) ? group.phone : "-"));
+                            + " " + group.getPhone());
         } else {
             final CarrierLineDeparture child = (CarrierLineDeparture) 
                     getChild(groupPosition, childPosition);
             
             ChildViewHolder childViewHolder = (ChildViewHolder) viewHolder;
-            childViewHolder.departure.setText(child.departureTime);
-            childViewHolder.arrival.setText(child.arrivalTime);            
+            childViewHolder.departure.setText(child.getDepartureTime());
+            childViewHolder.arrival.setText(child.getArrivalTime());            
         }
         
         return convertView;
@@ -115,7 +109,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
  
     @Override
     public int getChildrenCount(int groupPosition) {
-        return this.carrierLineDepartures.get(this.carrierLines.get(groupPosition).id).size() + 1;
+        return this.carrierLines.get(groupPosition).getDepartures().size() + 1;
     }
  
     @Override
@@ -157,8 +151,8 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         }
         
         CarrierLine carrierLine = (CarrierLine) getGroup(groupPosition);
-        groupViewHolder.carrier.setText(carrierLine.carrier);
-        groupViewHolder.line.setText(context.getResources().getString(R.string.line) + " " + carrierLine.name);
+        groupViewHolder.carrier.setText(carrierLine.getCarrier());
+        groupViewHolder.line.setText(context.getResources().getString(R.string.line) + " " + carrierLine.getName());
  
         return convertView;
     }

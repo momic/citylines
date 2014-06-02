@@ -21,9 +21,10 @@ import android.widget.ExpandableListView;
 import android.widget.FilterQueryProvider;
 import android.widget.ImageButton;
 import java.text.ParseException;
+import java.util.List;
 import org.citylines.R;
 import org.citylines.db.DBFactory;
-import org.citylines.db.line.AcceptableLines;
+import org.citylines.db.line.CarrierLine;
 import org.citylines.db.line.ExpandableListAdapter;
 import org.citylines.db.location.CurrentLocationParams;
 import org.citylines.db.location.LocationParams;
@@ -84,7 +85,7 @@ public class IntercityLinesFragment extends Fragment {
     private void showTimetable(Long deparetureId, Long destinationId, CharSequence date) {        
         // get the listview
         ExpandableListView expListView = (ExpandableListView) getView().findViewById(R.id.lvExp);
-        AcceptableLines lines;
+        List<CarrierLine> lines;
         try {
             lines = db.getAcceptableLines(deparetureId, destinationId, date);
         } catch (ParseException ex) {
@@ -93,7 +94,7 @@ public class IntercityLinesFragment extends Fragment {
  
         if (lines != null)
         {
-            ExpandableListAdapter listAdapter = new ExpandableListAdapter(getActivity(), lines.getCarrierLines(), lines.getCarrierLineDepartures());
+            ExpandableListAdapter listAdapter = new ExpandableListAdapter(getActivity(), lines);
 
             // setting list adapter
             expListView.setAdapter(listAdapter);            

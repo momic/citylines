@@ -34,7 +34,7 @@ public class ConfigureFragment extends Fragment {
                 // myIntent.putExtra("key", id); //Optional parameters
                 ConfigureFragment.this.startActivity(myIntent);
             } else {
-                /* TODO: Update action */
+                // TODO: Update action
             }
         }
     };    
