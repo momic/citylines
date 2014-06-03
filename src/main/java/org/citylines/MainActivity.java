@@ -35,7 +35,7 @@ public class MainActivity extends FragmentActivity implements
  
         // Adding Tabs
         for (String tab_name : tabs) {
-            actionBar.addTab(actionBar.newTab().setText(tab_name)
+            actionBar.addTab(actionBar.newTab().setText(tab_name.toUpperCase())
                     .setTabListener(this));
         }
         

@@ -65,14 +65,12 @@ public class NearbyLinesFragment extends Fragment implements OnClickListener {
     }
     
     private void showGPSUnavailableAlert() {
-        if (!locationAquired) {
-            Location lastKnown = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            if (lastKnown != null) {
-                alertbox("Can't get GPS lock.", "Using last known location.", false);
-                showNearbyStations(lastKnown);
-            } else {
-                alertbox("Can't get GPS lock.", "Check GPS and try again.", false);
-            }
+        Location lastKnown = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        if (lastKnown != null) {
+            alertbox("Can't get GPS lock.", "Using last known location.", false);
+            showNearbyStations(lastKnown);
+        } else {
+            alertbox("Can't get GPS lock.", "Check GPS and try again.", false);
         }
     }
 
@@ -89,7 +87,9 @@ public class NearbyLinesFragment extends Fragment implements OnClickListener {
                  public void run() {
                      pb.setVisibility(View.INVISIBLE);
                      locationManager.removeUpdates(locationListener);
-                     showGPSUnavailableAlert();
+                     if (!locationAquired) {
+                        showGPSUnavailableAlert();
+                     }
                  }
             }, 20000);            
         } else {

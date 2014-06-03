@@ -6,6 +6,7 @@
  
     <TextView
         android:id="@+id/cldDepartureTime"
+        android:textSize="18sp"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -13,6 +14,7 @@
         android:layout_marginRight="10dp"/>
     <TextView
         android:id="@+id/cldArrivalTime"
+        android:textSize="18sp"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
