@@ -5,7 +5,8 @@ import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
-import org.citylines.tabsswipe.adapter.TabsPagerAdapter;
+import java.util.Locale;
+import org.citylines.view.tabsswipe.adapter.TabsPagerAdapter;
 
 public class MainActivity extends FragmentActivity implements
         ActionBar.TabListener {
@@ -35,7 +36,7 @@ public class MainActivity extends FragmentActivity implements
  
         // Adding Tabs
         for (String tab_name : tabs) {
-            actionBar.addTab(actionBar.newTab().setText(tab_name.toUpperCase())
+            actionBar.addTab(actionBar.newTab().setText(tab_name.toUpperCase(Locale.US))
                     .setTabListener(this));
         }
         

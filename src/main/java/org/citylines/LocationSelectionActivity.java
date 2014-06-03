@@ -9,15 +9,17 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Spinner;
 import android.widget.Toast;
-import org.citylines.db.DBFactory;
-import org.citylines.db.location.CurrentPositionLocationParams;
-import org.citylines.db.location.LocationLevel;
-import static org.citylines.db.location.LocationLevel.LOCATION_LEVEL_CITY;
-import static org.citylines.db.location.LocationLevel.LOCATION_LEVEL_STATE;
-import org.citylines.db.location.LocationParams;
-import org.citylines.db.location.factory.LocationParamsFactory;
-import static org.citylines.db.location.factory.LocationParamsType.LOCATION_PARAMS_CURRENT_POSITION;
-import static org.citylines.db.location.factory.LocationParamsType.LOCATION_PARAMS_PARENT;
+import org.citylines.db.dao.DAOFactory;
+import org.citylines.db.dao.DAOType;
+import org.citylines.db.dao.LocationDAO;
+import org.citylines.model.location.factory.LocationParamsFactory;
+import org.citylines.model.location.CurrentPositionLocationParams;
+import org.citylines.model.location.LocationLevel;
+import org.citylines.model.location.LocationParams;
+import static org.citylines.model.location.factory.LocationParamsType.LOCATION_PARAMS_CURRENT_POSITION;
+import static org.citylines.model.location.factory.LocationParamsType.LOCATION_PARAMS_PARENT;
+import static org.citylines.model.location.LocationLevel.LOCATION_LEVEL_CITY;
+import static org.citylines.model.location.LocationLevel.LOCATION_LEVEL_STATE;
 
 /**
  *
@@ -25,8 +27,8 @@ import static org.citylines.db.location.factory.LocationParamsType.LOCATION_PARA
  */
 public class LocationSelectionActivity extends Activity implements OnItemSelectedListener {
     
-    // database handler
-    private final DBFactory db = DBFactory.getInstance(this);
+    // DAO handler
+    private LocationDAO locationDAO;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +38,9 @@ public class LocationSelectionActivity extends Activity implements OnItemSelecte
         
         // set layout
         setContentView(R.layout.location_selection);
+        
+        // init dao handlers
+        this.locationDAO = (LocationDAO) DAOFactory.build(DAOType.LOCATION_DAO, this);
        
         // fill spinners
         this.loadSpinnerData(LOCATION_LEVEL_STATE);
@@ -61,7 +66,7 @@ public class LocationSelectionActivity extends Activity implements OnItemSelecte
         // Initialize adapter
         SimpleCursorAdapter adapter = new SimpleCursorAdapter(this,
                 android.R.layout.simple_spinner_item,
-                db.getLocationItems(lp),
+                locationDAO.getLocationItems(lp),
                 new String[] {"name"},
                 new int[] {android.R.id.text1}, 0);        
         
@@ -85,7 +90,7 @@ public class LocationSelectionActivity extends Activity implements OnItemSelecte
         final CurrentPositionLocationParams cplp = (CurrentPositionLocationParams) 
                 LocationParamsFactory.build(LOCATION_PARAMS_CURRENT_POSITION, 
                         locationLevel, parentKey);
-        final Cursor currentState = db.getCurrentLocation(cplp);
+        final Cursor currentState = locationDAO.getCurrentLocation(cplp);
         int currentItemPosition = currentState.getInt(currentState.getColumnCount()-1);        
         spinner.setSelection(currentItemPosition);
     }
@@ -100,7 +105,7 @@ public class LocationSelectionActivity extends Activity implements OnItemSelecte
             LocationSelectionActivity.this.loadSpinnerData(spinnerTag.getNext(), id);
         } else {
             // Update current city
-            if (LocationSelectionActivity.this.db.setCurrentCity(id) > 0) {
+            if (locationDAO.setCurrentCity(id) > 0) {
                 // On rows updated show message
                 final Cursor c = (Cursor) parent.getItemAtPosition(position);
                 Toast.makeText(getApplicationContext(), 
