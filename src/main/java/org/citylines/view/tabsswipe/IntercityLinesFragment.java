@@ -24,17 +24,19 @@ import java.text.ParseException;
 import java.util.List;
 import org.citylines.R;
 import org.citylines.db.dao.CarrierLineDAO;
-import org.citylines.db.dao.DAOFactory;
-import org.citylines.db.dao.DAOType;
 import org.citylines.db.dao.LocationDAO;
-import org.citylines.model.location.factory.LocationParamsFactory;
-import static org.citylines.model.location.factory.LocationParamsType.LOCATION_PARAMS_CURRENT;
-import static org.citylines.model.location.factory.LocationParamsType.LOCATION_PARAMS_SIMILAR;
-import org.citylines.view.dialog.date.SelectDateFragment;
+import org.citylines.db.dao.factory.DAOFactory;
+import org.citylines.db.dao.factory.DAOType;
 import org.citylines.model.line.CarrierLine;
 import org.citylines.model.line.ExpandableListAdapter;
 import org.citylines.model.location.CurrentLocationParams;
 import org.citylines.model.location.LocationParams;
+import org.citylines.model.location.factory.LocationParamsFactory;
+import static org.citylines.model.location.factory.LocationParamsType.LOCATION_PARAMS_CURRENT;
+import static org.citylines.model.location.factory.LocationParamsType.LOCATION_PARAMS_SIMILAR;
+import org.citylines.view.dialog.date.SelectDateFragment;
+import static org.citylines.view.dialog.date.SelectDateFragment.INPUT_DATETIME_FORMATTER;
+import org.joda.time.DateTime;
  
 public class IntercityLinesFragment extends Fragment {
     
@@ -47,7 +49,7 @@ public class IntercityLinesFragment extends Fragment {
     
     private Long departureId;
     private Long destinationId;
-    private CharSequence date;
+    private DateTime date;
     
     private final OnItemClickListener destinationItemClick = new OnItemClickListener() {
         @Override
@@ -86,7 +88,7 @@ public class IntercityLinesFragment extends Fragment {
         
     }
     
-    private void showTimetable(Long deparetureId, Long destinationId, CharSequence date) {        
+    private void showTimetable(Long deparetureId, Long destinationId, DateTime date) {        
         // get the listview
         ExpandableListView expListView = (ExpandableListView) getView().findViewById(R.id.lvExp);
         List<CarrierLine> lines;
@@ -177,7 +179,7 @@ public class IntercityLinesFragment extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 //get date
-                date = s;
+                date = INPUT_DATETIME_FORMATTER.withZoneUTC().parseDateTime(s.toString());
                 
                 // show timetable
                 if (departureId != null && destinationId != null) {

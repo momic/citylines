@@ -8,15 +8,18 @@ import android.support.v4.app.Fragment;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import java.util.Calendar;
-import static org.citylines.model.Constant.INPUT_DATETIME_FORMAT;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 /**
  *
  * @author zlaja
  */
 public class SelectDateFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
+    
+    private static final String INPUT_DATETIME_FORMAT = "dd.MM.yyyy";
+    public static final DateTimeFormatter INPUT_DATETIME_FORMATTER = DateTimeFormat.forPattern(INPUT_DATETIME_FORMAT);
     
     public final static String DATE_EDIT_ID = "dateEditId";
 

@@ -1,4 +1,4 @@
-package org.citylines.db.dao;
+package org.citylines.db.dao.factory;
 
 /**
  *

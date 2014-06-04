@@ -1,6 +1,10 @@
-package org.citylines.db.dao;
+package org.citylines.db.dao.factory;
 
 import android.content.Context;
+import org.citylines.db.dao.CarrierLineDAO;
+import org.citylines.db.dao.DAO;
+import org.citylines.db.dao.LocationDAO;
+import org.citylines.db.dao.StationDAO;
 
 /**
  *

@@ -1,8 +1,6 @@
 package org.citylines.db.dao;
 
 import static org.citylines.db.DBManager.TABLE_TIMETABLE;
-import static org.citylines.model.Constant.DB_DATETIME_FORMATTER;
-import static org.citylines.model.Constant.OUTPUT_DATETIME_FORMATTER;
 import org.citylines.model.station.Station;
 import org.citylines.model.line.CarrierLine;
 import org.citylines.model.line.CarrierLineDeparture;
@@ -42,7 +40,9 @@ public class StationDAO extends DAO {
                     .append("WHERE S.cityLineStation=1 ")
                     .append("LIMIT ").append(limit)
                 .append(") AS S ON (S.id = T.stationId) ")
-                // TODO: make this as separate query
+                // TODO: Gain performance by adding redundant fields to CarrierLineDepartures
+                // DepartureStationID, DepartureTime, ArrivalStationID, ArrivalTime
+                // and removing these two joins
                 .append("INNER JOIN (")
                     .append("SELECT DISTINCT TT.carrierLineId, SS.name AS departureStation ")
                     .append("FROM Timetable AS TT ")
@@ -80,9 +80,8 @@ public class StationDAO extends DAO {
         DateTime dtEnd = dtStart.plus(60 * 60 * 1000);
         
         return queryDB(sqlSelect, fromClause, "stationDepartureTime BETWEEN ? AND ?", 
-                // TODO: activate this line after filling database with more data
-                // new String[] {dtStart.toString(df.withZoneUTC()), dtEnd.toString(df.withZoneUTC())},
-                new String[] {"1970-01-01 05:00:00", "1970-01-01 06:00:00"},
+                new String[] {dtStart.toString(DB_DATETIME_FORMATTER.withZoneUTC()), 
+                                dtEnd.toString(DB_DATETIME_FORMATTER.withZoneUTC())},
                 null, null, "T.stationId, T.carrierLineId, stationDepartureTime", null);        
     }
     

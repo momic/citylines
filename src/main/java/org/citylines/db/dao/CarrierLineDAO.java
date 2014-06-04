@@ -8,9 +8,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import static org.citylines.db.DBManager.TABLE_TIMETABLE;
-import static org.citylines.model.Constant.DB_DATETIME_FORMATTER;
-import static org.citylines.model.Constant.INPUT_DATETIME_FORMATTER;
-import static org.citylines.model.Constant.OUTPUT_DATETIME_FORMATTER;
 import org.citylines.model.line.CarrierLine;
 import org.citylines.model.line.CarrierLineDeparture;
 import org.joda.time.DateTime;
@@ -33,7 +30,7 @@ public class CarrierLineDAO extends DAO {
      * @param date
      * @return Cursor
      */
-    private Cursor fetchAcceptableLines(Long departureCityId, Long destinationCityId, CharSequence date) {
+    private Cursor fetchAcceptableLines(Long departureCityId, Long destinationCityId) {
         String[] columns = new String[] {
             "T.carrierLineId", "CR.name AS carrierName", "CL.name AS carrierLineName",
             "S.cityId", "C.name AS cityName", "C.contactPhone",
@@ -67,7 +64,7 @@ public class CarrierLineDAO extends DAO {
                 null, null, "T.carrierLineId, T.departureOffset, S.cityId, T.stationId", null);
     }
     
-    private List<CarrierLine> prepareAcceptableLines(Cursor c, Long departureCityId, CharSequence date) {
+    private List<CarrierLine> prepareAcceptableLines(Cursor c, Long departureCityId, DateTime date) {
         final List<String> departureTimes = new LinkedList<String>();
         final List<String> arrivalTimes = new LinkedList<String>();
         final List<CarrierLineDeparture> timetable = new ArrayList<CarrierLineDeparture>();
@@ -83,11 +80,10 @@ public class CarrierLineDAO extends DAO {
         String carrier = c.getString(c.getColumnIndex("carrierName"));
         String carrierLineName = c.getString(c.getColumnIndex("carrierLineName"));
         String contactPhone = c.getString(c.getColumnIndex("contactPhone"));
-        DateTime onDate =  INPUT_DATETIME_FORMATTER.withZoneUTC().parseDateTime(date.toString());
         
         String dateTimeColumn = (isDeparture) ? "departureTime" : "returnTime";
         DateTime result =  DB_DATETIME_FORMATTER.withZoneUTC().parseDateTime(c.getString(c.getColumnIndex(dateTimeColumn)));
-        DateTime carrierLineTime = onDate.plus(result.getMillis());
+        DateTime carrierLineTime = date.plus(result.getMillis());
         String sCarrierLineTime = carrierLineTime.toString(OUTPUT_DATETIME_FORMATTER);
         
         if (isDeparture) {            
@@ -122,7 +118,7 @@ public class CarrierLineDAO extends DAO {
             }
             
             result = DB_DATETIME_FORMATTER.withZoneUTC().parseDateTime(c.getString(c.getColumnIndex(dateTimeColumn)));
-            carrierLineTime = onDate.plus(result.getMillis());
+            carrierLineTime = date.plus(result.getMillis());
             sCarrierLineTime = carrierLineTime.toString(OUTPUT_DATETIME_FORMATTER);
             lastRowIsDeparture = isDeparture;
             isDeparture = (c.getInt(c.getColumnIndex("cityId")) == departureCityId);
@@ -165,9 +161,9 @@ public class CarrierLineDAO extends DAO {
      * @return
      * @throws ParseException 
      */
-    public List<CarrierLine> getAcceptableLines(Long departureCityId, Long destinationCityId, CharSequence date) throws ParseException {               
+    public List<CarrierLine> getAcceptableLines(Long departureCityId, Long destinationCityId, DateTime date) throws ParseException {               
         // fetch acceptable lines
-        Cursor c = fetchAcceptableLines(departureCityId, destinationCityId, date);
+        Cursor c = fetchAcceptableLines(departureCityId, destinationCityId);
         
         // validate parameters and fetched data 
         if ((c.getCount() <= 0) || (date == null) || ("".equals(date.toString()))) {
