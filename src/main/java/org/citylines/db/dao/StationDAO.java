@@ -16,7 +16,13 @@ import java.util.List;
  * @author zlaja
  */
 public class StationDAO extends DAO {
+    
+    private static final int MILIS_IN_HOUR = 60 * 60 * 1000;
 
+    private static double deg2rad(double deg) {
+        return (deg * Math.PI / 180.0);
+    }
+    
     public StationDAO(Context context) {
         super(context);
     }
@@ -24,6 +30,7 @@ public class StationDAO extends DAO {
     private Cursor fetchNearbyStations(double latitude, double longitude, String limit) {
         String[] sqlSelect = new String[] {
             "T.stationId", "S.name AS stationName", 
+            "S.departureStationDistance", "S.returnStationDistance", 
             "T.carrierLineId", "CL.name AS carrierLineName", 
             "CD.departureStation", "CA.arrivalStation", 
             "CR.name AS carrierName", 
@@ -31,13 +38,30 @@ public class StationDAO extends DAO {
             "datetime(strftime('%s', T.returnOffset, CLD.returnTime) - strftime('%s', '00:00:00'), 'unixepoch') AS stationReturnTime"
         };
         
+        // user location
+        final double coslat = Math.cos(deg2rad(latitude));
+        final double sinlat = Math.sin(deg2rad(latitude));
+        final double coslng = Math.cos(deg2rad(longitude));
+        final double sinlng = Math.sin(deg2rad(longitude));
+        
         String fromClause = new StringBuilder(TABLE_TIMETABLE).append(" AS T ")
                 .append("INNER JOIN (")
-                    // TODO: use longitude and latitude to order this select
-                    .append("SELECT S.id, S.name, S.cityId ")
+                    // Calculate partial distance using cos and sin columns
+                    // and order query using partial distance
+                    // because SQLite does not support trig functions
+                    .append("SELECT S.id, S.name, ")
+                    .append("S.sinDepLat * ").append(sinlat).append(" + S.cosDepLat * ").append(coslat)
+                    .append(" * (").append(coslng).append(" * S.cosDepLong + ").append(sinlng)
+                    .append(" * S.sinDepLong) AS departureStationDistance, ")
+                
+                    .append("S.sinRetLat * ").append(sinlat).append(" + S.cosRetLat * ").append(coslat)
+                    .append(" * (").append(coslng).append(" * S.cosRetLong + ").append(sinlng)
+                    .append(" * S.sinRetLong) AS returnStationDistance ")
+                
                     .append("FROM Station AS S ")
                     .append("INNER JOIN City AS C ON (C.id = S.cityId AND C.current=1) ")
                     .append("WHERE S.cityLineStation=1 ")
+                    .append("ORDER BY departureStationDistance DESC ")
                     .append("LIMIT ").append(limit)
                 .append(") AS S ON (S.id = T.stationId) ")
                 // TODO: Gain performance by adding redundant fields to CarrierLineDepartures
@@ -77,17 +101,27 @@ public class StationDAO extends DAO {
         DateTime dtStart = new DateTime();
         LocalDate ld = new LocalDate();
         dtStart = dtStart.minus(ld.toDateTimeAtStartOfDay().getMillis());
-        DateTime dtEnd = dtStart.plus(60 * 60 * 1000);
+        DateTime dtEnd = dtStart.plus(MILIS_IN_HOUR);
         
         return queryDB(sqlSelect, fromClause, "stationDepartureTime BETWEEN ? AND ?", 
                 new String[] {dtStart.toString(DB_DATETIME_FORMATTER.withZoneUTC()), 
                                 dtEnd.toString(DB_DATETIME_FORMATTER.withZoneUTC())},
-                null, null, "T.stationId, T.carrierLineId, stationDepartureTime", null);        
+                null, null, "S.departureStationDistance DESC, T.stationId, T.carrierLineId, stationDepartureTime", null);        
     }
     
     private List<Station> prepareNearbyStations(Cursor c) {
         Long stationId = c.getLong(c.getColumnIndex("stationId"));
         String stationName = c.getString(c.getColumnIndex("stationName"));
+        
+        Double departureStationDistance = null;
+        if (!c.isNull(c.getColumnIndex("departureStationDistance"))) {
+            departureStationDistance = c.getDouble(c.getColumnIndex("departureStationDistance"));
+        }
+        
+        Double returnStationDistance = null;
+        if (!c.isNull(c.getColumnIndex("returnStationDistance"))) {
+            returnStationDistance = c.getDouble(c.getColumnIndex("returnStationDistance"));
+        }
         
         Long carrierLineId = c.getLong(c.getColumnIndex("carrierLineId"));
         String carrierLineName = c.getString(c.getColumnIndex("carrierLineName"));
@@ -115,15 +149,29 @@ public class StationDAO extends DAO {
                     carrierLineName = c.getString(c.getColumnIndex("carrierLineName"));
                     departureStation = c.getString(c.getColumnIndex("departureStation"));
                     arrivalStation = c.getString(c.getColumnIndex("arrivalStation"));
+                    
                     carrierName = c.getString(c.getColumnIndex("carrierName"));
                 }
                 
                 
-                stations.add(new Station(stationId, stationName, carrierLines));
+                stations.add(new Station(stationId, stationName, 
+                        departureStationDistance, returnStationDistance, carrierLines));
 
                 carrierLines = new ArrayList<CarrierLine>();
                 stationId = c.getLong(c.getColumnIndex("stationId"));
                 stationName = c.getString(c.getColumnIndex("stationName"));
+                
+                if (!c.isNull(c.getColumnIndex("departureStationDistance"))) {
+                    departureStationDistance = c.getDouble(c.getColumnIndex("departureStationDistance"));
+                } else {
+                    departureStationDistance = null;
+                }
+
+                if (!c.isNull(c.getColumnIndex("returnStationDistance"))) {
+                    returnStationDistance = c.getDouble(c.getColumnIndex("returnStationDistance"));
+                } else {
+                    returnStationDistance = null;
+                }
             }
             
             if (carrierLineId != c.getLong(c.getColumnIndex("carrierLineId"))) {                
@@ -147,7 +195,8 @@ public class StationDAO extends DAO {
         carrierLines.add(new CarrierLine(carrierLineId, carrierLineName, carrierName, 
                 departureStation, arrivalStation, 
                 null, null, carrierLineDepartures));
-        stations.add(new Station(stationId, stationName, carrierLines));
+        stations.add(new Station(stationId, stationName, 
+                departureStationDistance, returnStationDistance, carrierLines));
         
         return stations;
         
@@ -156,10 +205,10 @@ public class StationDAO extends DAO {
     /**
      * Get nearby stations
      * 
-     * @param latitude
-     * @param longitude
-     * @param limit
-     * @return 
+     * @param latitude - device latitude
+     * @param longitude - device longitude
+     * @param limit - stations limit to fetch
+     * @return List<Station> - list of stations
      */
     public List<Station> getNerbyStations(double latitude, double longitude, String limit) {
         // fech nearby stations

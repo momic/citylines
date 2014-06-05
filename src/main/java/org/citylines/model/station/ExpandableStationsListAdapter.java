@@ -31,8 +31,10 @@ public class ExpandableStationsListAdapter extends BaseExpandableListAdapter {
         TextView name;
         TextView departureFrom;
         TextView departureTimes;
+        TextView departureDistance;
         TextView returnFrom;
         TextView returnTimes;
+        TextView returnDistance;
     }
 
     public ExpandableStationsListAdapter(Context context, List<Station> stations) {
@@ -47,7 +49,7 @@ public class ExpandableStationsListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public int getChildrenCount(int groupPosition) {
-        return stations.get(groupPosition).carrierLines.size();
+        return stations.get(groupPosition).getCarrierLines().size();
     }
 
     @Override
@@ -57,17 +59,17 @@ public class ExpandableStationsListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public Object getChild(int groupPosition, int childPosition) {
-        return stations.get(groupPosition).carrierLines.get(childPosition);
+        return stations.get(groupPosition).getCarrierLines().get(childPosition);
     }
 
     @Override
     public long getGroupId(int groupPosition) {
-        return stations.get(groupPosition).id;
+        return stations.get(groupPosition).getId();
     }
 
     @Override
     public long getChildId(int groupPosition, int childPosition) {
-        return stations.get(groupPosition).carrierLines.get(childPosition).getId();
+        return stations.get(groupPosition).getCarrierLines().get(childPosition).getId();
     }
 
     @Override
@@ -94,7 +96,7 @@ public class ExpandableStationsListAdapter extends BaseExpandableListAdapter {
         }
         
         Station station = (Station) getGroup(groupPosition);
-        groupViewHolder.name.setText(station.name);
+        groupViewHolder.name.setText(station.getName());
  
         return convertView;        
     }
@@ -112,12 +114,16 @@ public class ExpandableStationsListAdapter extends BaseExpandableListAdapter {
             childViewHolder.name = (TextView) convertView.findViewById(R.id.sclName);
             childViewHolder.name.setTypeface(null, Typeface.BOLD);
             
+            childViewHolder.departureDistance = (TextView) convertView.findViewById(R.id.sclDepartureDistance);
+            childViewHolder.returnDistance = (TextView) convertView.findViewById(R.id.sclReturnDistance);
+            
             childViewHolder.departureFrom = (TextView) convertView.findViewById(R.id.sclDepartureFrom);
             childViewHolder.returnFrom = (TextView) convertView.findViewById(R.id.sclReturnFrom);
             
             childViewHolder.departureTimes = (TextView) convertView.findViewById(R.id.sclDepartureTimes);            
             childViewHolder.returnTimes = (TextView) convertView.findViewById(R.id.sclReturnTimes);
-                        
+                  
+            // set chldViewHolder as Tag to avoid expecive calls to findViewById
             convertView.setTag(childViewHolder);
         } else {
             childViewHolder = (ChildViewHolder) convertView.getTag();
@@ -146,6 +152,11 @@ public class ExpandableStationsListAdapter extends BaseExpandableListAdapter {
         
         childViewHolder.departureFrom.setText(String.format(context.getResources().getString(R.string.departure_from), line.getDepartureStation()));
         childViewHolder.returnFrom.setText(String.format(context.getResources().getString(R.string.return_from), line.getArrivalStation()));
+
+        // Get station
+        Station station = (Station) getGroup(groupPosition);
+        childViewHolder.departureDistance.setText(String.format(context.getResources().getString(R.string.distance_to_station), station.getDepartureStationDistance()));
+        childViewHolder.returnDistance.setText(String.format(context.getResources().getString(R.string.distance_to_station), station.getReturnStationDistance()));
         
         return convertView;
     }

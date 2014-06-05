@@ -27,7 +27,7 @@
     
     <string name="nearby_stations">Nearby stations:</string>
     <string name="refresh">Refresh</string>
-    <string name="distance_to_station">Distance to station:</string>
+    <string name="distance_to_station">Distance to station: %1$s km</string>
     
     <string name="departure_from">Departure from %1$s:</string>
     <string name="return_from">Return from %1$s:</string>

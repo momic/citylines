@@ -19,7 +19,8 @@ public class CarrierLine {
     
     private final static String DASH = "-";
 
-    public CarrierLine(Long id, String name, String carrier, String departureStation, String arrivalStation, String gate, String phone, List<CarrierLineDeparture> departures) {
+    public CarrierLine(Long id, String name, String carrier, String departureStation, String arrivalStation, 
+            String gate, String phone, List<CarrierLineDeparture> departures) {
         this.id = id;
         this.name = name;
         this.carrier = carrier;

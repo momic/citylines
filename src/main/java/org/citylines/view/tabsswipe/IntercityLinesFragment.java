@@ -178,12 +178,14 @@ public class IntercityLinesFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                //get date
-                date = INPUT_DATETIME_FORMATTER.withZoneUTC().parseDateTime(s.toString());
-                
-                // show timetable
-                if (departureId != null && destinationId != null) {
-                    showTimetable(departureId, destinationId, date);                    
+                if (s.length() > 0) {
+                    //get date
+                    date = INPUT_DATETIME_FORMATTER.withZoneUTC().parseDateTime(s.toString());
+
+                    // show timetable
+                    if (departureId != null && destinationId != null) {
+                        showTimetable(departureId, destinationId, date);                    
+                    }
                 }
             }
 

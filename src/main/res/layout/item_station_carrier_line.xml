@@ -2,7 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:padding="5dp">
     <TextView
         android:id="@+id/sclName"
         android:layout_width="wrap_content"
@@ -29,7 +30,6 @@
         android:layout_marginRight="20dp"/>    
     <TextView
         android:id="@+id/sclDepartureDistance"
-        android:text="Distance: 300m"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="right"
@@ -54,7 +54,6 @@
         android:layout_marginRight="20dp"/>
     <TextView
         android:id="@+id/sclReturnDistance"
-        android:text="Distance: 300m"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="right"

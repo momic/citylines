@@ -104,7 +104,7 @@ public class CarrierLineDAO extends DAO {
                     timetable.add(new CarrierLineDeparture(departureTimesIterator.next(), 
                             arrivalTimesIterator.next()));
                 }
-                carrierLines.add(new CarrierLine(carrierLineId, carrierLineName, carrier, 
+                carrierLines.add(new CarrierLine(carrierLineId, carrierLineName, carrier,
                         departureStation, arrivalStation, departureGate, contactPhone, timetable));
                 
                 departureTimes.clear();
@@ -146,8 +146,8 @@ public class CarrierLineDAO extends DAO {
                     arrivalTimesIterator.next()));
         }
         carrierLines.add(
-                new CarrierLine(carrierLineId, carrierLineName, 
-                        carrier, departureStation, arrivalStation, departureGate, contactPhone, timetable));
+                new CarrierLine(carrierLineId, carrierLineName, carrier, 
+                        departureStation, arrivalStation, departureGate, contactPhone, timetable));
         
         return carrierLines;        
     }
