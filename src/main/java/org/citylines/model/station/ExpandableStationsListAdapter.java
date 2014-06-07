@@ -12,8 +12,10 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import org.citylines.R;
+import static org.citylines.db.dao.DAO.OUTPUT_DATETIME_FORMATTER;
 import org.citylines.model.line.CarrierLine;
 import org.citylines.model.line.CarrierLineDeparture;
+import org.joda.time.DateTime;
 
 /**
  *
@@ -133,14 +135,25 @@ public class ExpandableStationsListAdapter extends BaseExpandableListAdapter {
         CarrierLine line = (CarrierLine) getChild(groupPosition, childPosition);
         Iterator<CarrierLineDeparture> departuresIterator = line.getDepartures().iterator();
         
+        DateTime now = new DateTime();
+        String currentTime = now.toString(OUTPUT_DATETIME_FORMATTER);
+        
         // Prepare departure and return times
         List<String> departureTimesList = new ArrayList<String>();
         List<String> returnTimesList = new ArrayList<String>();
         while (departuresIterator.hasNext()) {
             CarrierLineDeparture cld = departuresIterator.next();
-            departureTimesList.add(cld.getDepartureTime());
-            returnTimesList.add(cld.getArrivalTime());
+            
+            // don't add passed lines
+            if (cld.getDepartureTime().compareTo(currentTime) >= 0) {
+                departureTimesList.add(cld.getDepartureTime());
+            }
+            
+            if (cld.getArrivalTime().compareTo(currentTime) >= 0) {
+                returnTimesList.add(cld.getArrivalTime());
+            }
         }
+        // sort times
         Collections.sort(departureTimesList);
         Collections.sort(returnTimesList);
         

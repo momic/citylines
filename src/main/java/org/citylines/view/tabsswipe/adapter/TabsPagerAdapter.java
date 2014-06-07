@@ -3,10 +3,10 @@ package org.citylines.view.tabsswipe.adapter;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import org.citylines.view.tabsswipe.CityLinesFragment;
+import org.citylines.view.tabsswipe.MapFragment;
 import org.citylines.view.tabsswipe.ConfigureFragment;
 import org.citylines.view.tabsswipe.IntercityLinesFragment;
-import org.citylines.view.tabsswipe.NearbyLinesFragment;
+import org.citylines.view.tabsswipe.CityLinesFragment;
  
 public class TabsPagerAdapter extends FragmentPagerAdapter {
     
@@ -19,14 +19,14 @@ public class TabsPagerAdapter extends FragmentPagerAdapter {
  
         switch (index) {
         case 0:
-            // Nerby lines fragment activity
-            return new NearbyLinesFragment();
-        case 1:
             // City lines fragment activity
             return new CityLinesFragment();
-        case 2:
+        case 1:
             // Intercity lines fragment activity
             return new IntercityLinesFragment();
+        case 2:
+            // Map fragment activity
+            return new MapFragment();
         case 3:
             // Configure fragment activity
             return new ConfigureFragment();

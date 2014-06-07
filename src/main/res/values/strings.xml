@@ -3,9 +3,9 @@
     <string name="app_name">CityLines</string>
 
     <string-array name="tabs_array">
-        <item>Nearby</item>
         <item>City</item>
         <item>Intercity</item>
+        <item>Map</item>
         <item>Configure</item>
     </string-array>
     
@@ -31,4 +31,6 @@
     
     <string name="departure_from">Departure from %1$s:</string>
     <string name="return_from">Return from %1$s:</string>
+    <string name="action_update">Update</string>
+    <string name="action_location">Location</string>
 </resources>

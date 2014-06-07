@@ -1,15 +1,15 @@
 package org.citylines.db.dao;
 
-import static org.citylines.db.DBManager.TABLE_TIMETABLE;
-import org.citylines.model.station.Station;
-import org.citylines.model.line.CarrierLine;
-import org.citylines.model.line.CarrierLineDeparture;
-import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
 import android.content.Context;
 import android.database.Cursor;
 import java.util.ArrayList;
 import java.util.List;
+import static org.citylines.db.DBManager.TABLE_TIMETABLE;
+import org.citylines.model.line.CarrierLine;
+import org.citylines.model.line.CarrierLineDeparture;
+import org.citylines.model.station.Station;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 
 /**
  *
@@ -103,8 +103,11 @@ public class StationDAO extends DAO {
         dtStart = dtStart.minus(ld.toDateTimeAtStartOfDay().getMillis());
         DateTime dtEnd = dtStart.plus(MILIS_IN_HOUR);
         
-        return queryDB(sqlSelect, fromClause, "stationDepartureTime BETWEEN ? AND ?", 
+        return queryDB(sqlSelect, fromClause, 
+                "(stationDepartureTime BETWEEN ? AND ?) OR (stationReturnTime BETWEEN ? AND ?)", 
                 new String[] {dtStart.toString(DB_DATETIME_FORMATTER.withZoneUTC()), 
+                                dtEnd.toString(DB_DATETIME_FORMATTER.withZoneUTC()),
+                                dtStart.toString(DB_DATETIME_FORMATTER.withZoneUTC()),
                                 dtEnd.toString(DB_DATETIME_FORMATTER.withZoneUTC())},
                 null, null, "S.departureStationDistance DESC, T.stationId, T.carrierLineId, stationDepartureTime", null);        
     }
