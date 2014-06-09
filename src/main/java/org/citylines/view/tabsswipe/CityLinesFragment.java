@@ -12,7 +12,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -22,13 +21,11 @@ import android.widget.ExpandableListView;
 import android.widget.ProgressBar;
 import java.util.List;
 import org.citylines.R;
-import static org.citylines.db.dao.DAO.OUTPUT_DATETIME_FORMATTER;
 import org.citylines.db.dao.StationDAO;
 import org.citylines.db.dao.factory.DAOFactory;
 import org.citylines.db.dao.factory.DAOType;
 import org.citylines.model.station.ExpandableStationsListAdapter;
 import org.citylines.model.station.Station;
-import org.joda.time.DateTime;
 
 public class CityLinesFragment extends Fragment implements OnClickListener {
     
@@ -88,15 +85,15 @@ public class CityLinesFragment extends Fragment implements OnClickListener {
             locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, locationListener, myLooper);
             final Handler myHandler = new Handler(myLooper);
             myHandler.postDelayed(new Runnable() {
-                 @Override
-                 public void run() {
-                     pb.setVisibility(View.INVISIBLE);
-                     locationManager.removeUpdates(locationListener);
-                     if (!locationAquired) {
+                @Override
+                public void run() {
+                    pb.setVisibility(View.INVISIBLE);
+                    locationManager.removeUpdates(locationListener);
+                    if (!locationAquired) {
                         showGPSUnavailableAlert();
-                     }
-                 }
-            }, 20000);            
+                    }
+                }
+            }, 20000);
         } else {
             alertbox("Check GPS Status!", "Your device's GPS is disabled.", true);
         }

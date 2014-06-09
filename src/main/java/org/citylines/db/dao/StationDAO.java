@@ -109,7 +109,7 @@ public class StationDAO extends DAO {
                                 dtEnd.toString(DB_DATETIME_FORMATTER.withZoneUTC()),
                                 dtStart.toString(DB_DATETIME_FORMATTER.withZoneUTC()),
                                 dtEnd.toString(DB_DATETIME_FORMATTER.withZoneUTC())},
-                null, null, "S.departureStationDistance DESC, T.stationId, T.carrierLineId, stationDepartureTime", null);        
+                null, null, "S.departureStationDistance DESC, T.stationId, T.carrierLineId", null);        
     }
     
     private List<Station> prepareNearbyStations(Cursor c) {
@@ -218,7 +218,7 @@ public class StationDAO extends DAO {
         Cursor c = fetchNearbyStations(latitude, longitude, limit);
         
         // check resultset
-        if ((c.getCount() <= 0)) {
+        if (c.getCount() <= 0) {
             return null;
         }
         

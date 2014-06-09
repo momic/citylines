@@ -23,6 +23,8 @@ import org.joda.time.DateTime;
  */
 public class ExpandableStationsListAdapter extends BaseExpandableListAdapter {
     
+    private final static int DEPARTURE_TIMES_SIZE = 5;
+    
     private final Context context;
     private final List<Station> stations;
     
@@ -135,8 +137,9 @@ public class ExpandableStationsListAdapter extends BaseExpandableListAdapter {
         CarrierLine line = (CarrierLine) getChild(groupPosition, childPosition);
         Iterator<CarrierLineDeparture> departuresIterator = line.getDepartures().iterator();
         
-        DateTime now = new DateTime();
-        String currentTime = now.toString(OUTPUT_DATETIME_FORMATTER);
+        // We will not show departure times older than 3 minutes from now
+        final DateTime now = new DateTime();
+        final String currentTime = now.minus(3 * 60 * 1000).toString(OUTPUT_DATETIME_FORMATTER);
         
         // Prepare departure and return times
         List<String> departureTimesList = new ArrayList<String>();
@@ -145,11 +148,13 @@ public class ExpandableStationsListAdapter extends BaseExpandableListAdapter {
             CarrierLineDeparture cld = departuresIterator.next();
             
             // don't add passed lines
-            if (cld.getDepartureTime().compareTo(currentTime) >= 0) {
+            if (departureTimesList.size() <= DEPARTURE_TIMES_SIZE 
+                    & cld.getDepartureTime().compareTo(currentTime) >= 0) {
                 departureTimesList.add(cld.getDepartureTime());
             }
             
-            if (cld.getArrivalTime().compareTo(currentTime) >= 0) {
+            if (returnTimesList.size() <= DEPARTURE_TIMES_SIZE 
+                    & cld.getArrivalTime().compareTo(currentTime) >= 0) {
                 returnTimesList.add(cld.getArrivalTime());
             }
         }
