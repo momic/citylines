@@ -21,11 +21,14 @@ import android.widget.ExpandableListView;
 import android.widget.ProgressBar;
 import java.util.List;
 import org.citylines.R;
+import org.citylines.db.dao.CalendarDAO;
 import org.citylines.db.dao.StationDAO;
 import org.citylines.db.dao.factory.DAOFactory;
 import org.citylines.db.dao.factory.DAOType;
+import org.citylines.model.calendar.DepartureDate;
 import org.citylines.model.station.ExpandableStationsListAdapter;
 import org.citylines.model.station.Station;
+import org.joda.time.LocalDateTime;
 
 public class CityLinesFragment extends Fragment implements OnClickListener {
     
@@ -39,6 +42,7 @@ public class CityLinesFragment extends Fragment implements OnClickListener {
     private Boolean locationAquired = false;
     
     private StationDAO stationDAO;
+    private CalendarDAO holidayDAO;
     private Context context;
 
     @Override
@@ -47,6 +51,7 @@ public class CityLinesFragment extends Fragment implements OnClickListener {
         
         this.context = getActivity();
         stationDAO = (StationDAO) DAOFactory.build(DAOType.STATION_DAO, context);
+        holidayDAO = (CalendarDAO) DAOFactory.build(DAOType.HOLIDAY_DAO, context);
     }
 
     @Override
@@ -147,8 +152,15 @@ public class CityLinesFragment extends Fragment implements OnClickListener {
     private void showNearbyStations(Location loc) {
         // get the listview
         ExpandableListView expListView = (ExpandableListView) getView().findViewById(R.id.elvStation);
+
+        // Get current DateTime, including current TimeZone
+        LocalDateTime ldt = new LocalDateTime();
         
-        List<Station> stations = stationDAO.getNerbyStations(loc.getLatitude(), loc.getLongitude(), NEARBY_STATIONS_COUNT);
+        // Get nearby stations
+        List<Station> stations = stationDAO.getNerbyStations(
+                loc.getLatitude(), loc.getLongitude(), NEARBY_STATIONS_COUNT, 
+                new DepartureDate(ldt, holidayDAO.isNationalHoliday(ldt)));
+        
         if (stations != null)
         {
             ExpandableStationsListAdapter listAdapter = new ExpandableStationsListAdapter(context, stations);

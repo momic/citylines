@@ -8,4 +8,5 @@ public enum DAOType {
     CARRIER_LINE_DAO,
     LOCATION_DAO,
     STATION_DAO,    
+    HOLIDAY_DAO,    
 }

@@ -19,6 +19,7 @@ public class DBManager extends SQLiteAssetHelper {
     public static final String TABLE_TIMETABLE = "Timetable";
     public static final String TABLE_STATION = "Station";
     
+    public static final String TABLE_HOLIDAY_CALENDAR = "HolidayCalendar";
     
     private static DBManager instance = null;
     public static DBManager getInstance(Context context) {

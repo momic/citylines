@@ -148,12 +148,12 @@ public class ExpandableStationsListAdapter extends BaseExpandableListAdapter {
             CarrierLineDeparture cld = departuresIterator.next();
             
             // don't add passed lines
-            if (departureTimesList.size() <= DEPARTURE_TIMES_SIZE 
+            if (departureTimesList.size() < DEPARTURE_TIMES_SIZE 
                     & cld.getDepartureTime().compareTo(currentTime) >= 0) {
                 departureTimesList.add(cld.getDepartureTime());
             }
             
-            if (returnTimesList.size() <= DEPARTURE_TIMES_SIZE 
+            if (returnTimesList.size() < DEPARTURE_TIMES_SIZE 
                     & cld.getArrivalTime().compareTo(currentTime) >= 0) {
                 returnTimesList.add(cld.getArrivalTime());
             }

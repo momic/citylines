@@ -5,11 +5,10 @@ import android.database.Cursor;
 import java.util.ArrayList;
 import java.util.List;
 import static org.citylines.db.DBManager.TABLE_TIMETABLE;
+import org.citylines.model.calendar.DepartureDate;
 import org.citylines.model.line.CarrierLine;
 import org.citylines.model.line.CarrierLineDeparture;
 import org.citylines.model.station.Station;
-import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
 
 /**
  *
@@ -17,7 +16,7 @@ import org.joda.time.LocalDate;
  */
 public class StationDAO extends DAO {
     
-    private static final int MILIS_IN_HOUR = 60 * 60 * 1000;
+    private static final int SECONDS_IN_HOUR = 60 * 60;
 
     private static double deg2rad(double deg) {
         return (deg * Math.PI / 180.0);
@@ -27,15 +26,17 @@ public class StationDAO extends DAO {
         super(context);
     }
     
-    private Cursor fetchNearbyStations(double latitude, double longitude, String limit) {
-        String[] sqlSelect = new String[] {
+    private Cursor fetchNearbyStations(double latitude, double longitude, String limit, DepartureDate startDate) {
+        final String[] sqlSelect = new String[] {
             "T.stationId", "S.name AS stationName", 
             "S.departureStationDistance", "S.returnStationDistance", 
             "T.carrierLineId", "CL.name AS carrierLineName", 
             "CD.departureStation", "CA.arrivalStation", 
             "CR.name AS carrierName", 
-            "datetime(strftime('%s', T.departureOffset, CLD.departureTime) - strftime('%s', '00:00:00'), 'unixepoch') AS stationDepartureTime",
-            "datetime(strftime('%s', T.returnOffset, CLD.returnTime) - strftime('%s', '00:00:00'), 'unixepoch') AS stationReturnTime"
+            // TODO: Change departureOffset and departureTime type to Long.
+            // Field should hold seconds from start of day in DB
+            "strftime('%s', T.departureOffset, CLD.departureTime) - strftime('%s', '00:00:00') AS stationDepartureTime",
+            "strftime('%s', T.returnOffset, CLD.returnTime) - strftime('%s', '00:00:00') AS stationReturnTime"
         };
         
         // user location
@@ -44,7 +45,7 @@ public class StationDAO extends DAO {
         final double coslng = Math.cos(deg2rad(longitude));
         final double sinlng = Math.sin(deg2rad(longitude));
         
-        String fromClause = new StringBuilder(TABLE_TIMETABLE).append(" AS T ")
+        final String fromClause = new StringBuilder(TABLE_TIMETABLE).append(" AS T ")
                 .append("INNER JOIN (")
                     // Calculate partial distance using cos and sin columns
                     // and order query using partial distance
@@ -95,24 +96,32 @@ public class StationDAO extends DAO {
                 .append("INNER JOIN CarrierLineDepartures AS CLD ON (CLD.carrierLineId = T.carrierLineId) ")
                 .append("INNER JOIN CarrierLine AS CL ON (CL.id = T.carrierLineId) ")
                 .append("INNER JOIN Carrier AS CR ON (CR.id = CL.carrierId) ")
+                .append("LEFT JOIN CarrierLineRegime AS CLR ON (CLR.id = CLD.carrierLineRegimeId)")
                 .toString();
 
-        // calculate start and end time
-        DateTime dtStart = new DateTime();
-        LocalDate ld = new LocalDate();
-        dtStart = dtStart.minus(ld.toDateTimeAtStartOfDay().getMillis());
-        DateTime dtEnd = dtStart.plus(MILIS_IN_HOUR);
+        final DepartureDate endDate = startDate.plus(SECONDS_IN_HOUR);
         
-        return queryDB(sqlSelect, fromClause, 
-                "(stationDepartureTime BETWEEN ? AND ?) OR (stationReturnTime BETWEEN ? AND ?)", 
-                new String[] {dtStart.toString(DB_DATETIME_FORMATTER.withZoneUTC()), 
-                                dtEnd.toString(DB_DATETIME_FORMATTER.withZoneUTC()),
-                                dtStart.toString(DB_DATETIME_FORMATTER.withZoneUTC()),
-                                dtEnd.toString(DB_DATETIME_FORMATTER.withZoneUTC())},
-                null, null, "S.departureStationDistance DESC, T.stationId, T.carrierLineId", null);        
+        final String whereClause = new StringBuilder("((stationDepartureTime BETWEEN ")
+            .append(startDate.getOffset()).append(" AND ").append(endDate.getOffset())
+            .append(") OR (stationReturnTime BETWEEN ")
+            .append(startDate.getOffset()).append(" AND ").append(endDate.getOffset())
+            .append(")) ")
+            .append("AND (CLR.id IS NULL OR (CLR.active AND (")
+                .append("date(?) BETWEEN CLR.fromDate AND CLR.untilDate) ")
+            .append("AND (")
+                .append("(CLR.workDay AND CAST(strftime('%w', 'now', 'localtime') AS integer) < 6) OR ")
+                .append("(CLR.saturday AND CAST(strftime('%w', 'now', 'localtime') AS integer) = 6) OR ")
+                .append("(CLR.sunday AND CAST(strftime('%w', 'now', 'localtime') AS integer) = 7)")
+                .append(startDate.isNationalHoliday() ? " OR CLR.nationalHoliday" : "")
+            .append(")))")
+            .toString();
+        
+        return queryDB(sqlSelect, fromClause, whereClause, 
+                new String[] {startDate.toString(DB_DATETIME_FORMATTER)}, null, null, 
+                "S.departureStationDistance DESC, T.stationId, T.carrierLineId", null);        
     }
     
-    private List<Station> prepareNearbyStations(Cursor c) {
+    private List<Station> prepareNearbyStations(Cursor c, DepartureDate startDate) {
         Long stationId = c.getLong(c.getColumnIndex("stationId"));
         String stationName = c.getString(c.getColumnIndex("stationName"));
         
@@ -132,12 +141,15 @@ public class StationDAO extends DAO {
         String arrivalStation = c.getString(c.getColumnIndex("arrivalStation"));
         String carrierName = c.getString(c.getColumnIndex("carrierName"));
                 
-        DateTime departureTime = DB_DATETIME_FORMATTER.parseDateTime(c.getString(c.getColumnIndex("stationDepartureTime")));
-        DateTime returnTime = DB_DATETIME_FORMATTER.parseDateTime(c.getString(c.getColumnIndex("stationReturnTime")));
+        int departureOffset = c.getInt(c.getColumnIndex("stationDepartureTime"));
+        int returnOffset = c.getInt(c.getColumnIndex("stationReturnTime"));
         
         List<CarrierLine> carrierLines = new ArrayList<CarrierLine>();
         List<CarrierLineDeparture> carrierLineDepartures = new ArrayList<CarrierLineDeparture>();
-        carrierLineDepartures.add(new CarrierLineDeparture(departureTime.toString(OUTPUT_DATETIME_FORMATTER), returnTime.toString(OUTPUT_DATETIME_FORMATTER)));
+        carrierLineDepartures.add(new CarrierLineDeparture(
+            startDate.withSecodsOfDay(departureOffset).toString(OUTPUT_DATETIME_FORMATTER), 
+            startDate.withSecodsOfDay(returnOffset).toString(OUTPUT_DATETIME_FORMATTER)
+        ));
         
         List<Station> stations = new ArrayList<Station>();
         while (c.moveToNext()) {
@@ -190,9 +202,12 @@ public class StationDAO extends DAO {
                 carrierName = c.getString(c.getColumnIndex("carrierName"));
             }
             
-            departureTime = DB_DATETIME_FORMATTER.parseDateTime(c.getString(c.getColumnIndex("stationDepartureTime")));
-            returnTime = DB_DATETIME_FORMATTER.parseDateTime(c.getString(c.getColumnIndex("stationReturnTime")));
-            carrierLineDepartures.add(new CarrierLineDeparture(departureTime.toString(OUTPUT_DATETIME_FORMATTER), returnTime.toString(OUTPUT_DATETIME_FORMATTER)));
+            departureOffset = c.getInt(c.getColumnIndex("stationDepartureTime"));
+            returnOffset = c.getInt(c.getColumnIndex("stationReturnTime"));
+            carrierLineDepartures.add(new CarrierLineDeparture(
+                startDate.withSecodsOfDay(departureOffset).toString(OUTPUT_DATETIME_FORMATTER), 
+                startDate.withSecodsOfDay(returnOffset).toString(OUTPUT_DATETIME_FORMATTER)
+            ));
         }
         
         carrierLines.add(new CarrierLine(carrierLineId, carrierLineName, carrierName, 
@@ -211,11 +226,12 @@ public class StationDAO extends DAO {
      * @param latitude - device latitude
      * @param longitude - device longitude
      * @param limit - stations limit to fetch
-     * @return List<Station> - list of stations
+     * @param startDate
+     * @return List\<Station\> - list of stations
      */
-    public List<Station> getNerbyStations(double latitude, double longitude, String limit) {
+    public List<Station> getNerbyStations(double latitude, double longitude, String limit, DepartureDate startDate) {
         // fech nearby stations
-        Cursor c = fetchNearbyStations(latitude, longitude, limit);
+        Cursor c = fetchNearbyStations(latitude, longitude, limit, startDate);
         
         // check resultset
         if (c.getCount() <= 0) {
@@ -223,6 +239,6 @@ public class StationDAO extends DAO {
         }
         
         // prepare data
-        return prepareNearbyStations(c);
+        return prepareNearbyStations(c, startDate);
     }
 }

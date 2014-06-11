@@ -3,6 +3,7 @@ package org.citylines.db.dao.factory;
 import android.content.Context;
 import org.citylines.db.dao.CarrierLineDAO;
 import org.citylines.db.dao.DAO;
+import org.citylines.db.dao.CalendarDAO;
 import org.citylines.db.dao.LocationDAO;
 import org.citylines.db.dao.StationDAO;
 
@@ -26,6 +27,9 @@ public class DAOFactory {
                 break;
             case STATION_DAO:
                 result = new StationDAO(context);
+                break;
+            case HOLIDAY_DAO:
+                result = new CalendarDAO(context);
                 break;
         }
         return result;

@@ -27,6 +27,7 @@ import org.citylines.db.dao.CarrierLineDAO;
 import org.citylines.db.dao.LocationDAO;
 import org.citylines.db.dao.factory.DAOFactory;
 import org.citylines.db.dao.factory.DAOType;
+import org.citylines.model.calendar.DepartureDate;
 import org.citylines.model.line.CarrierLine;
 import org.citylines.model.line.ExpandableListAdapter;
 import org.citylines.model.location.CurrentLocationParams;
@@ -35,21 +36,21 @@ import org.citylines.model.location.factory.LocationParamsFactory;
 import static org.citylines.model.location.factory.LocationParamsType.LOCATION_PARAMS_CURRENT;
 import static org.citylines.model.location.factory.LocationParamsType.LOCATION_PARAMS_SIMILAR;
 import org.citylines.view.dialog.date.SelectDateFragment;
-import static org.citylines.view.dialog.date.SelectDateFragment.INPUT_DATETIME_FORMATTER;
-import org.joda.time.DateTime;
  
 public class IntercityLinesFragment extends Fragment {
     
     public static final int DIALOG_FRAGMENT = 1;
     
-    private ImageButton changeDate;
     private Context context;
+    private ImageButton changeDate;
+    private EditText editDate;
+    
     private LocationDAO locationDAO;
     private CarrierLineDAO carrierLineDAO;
     
     private Long departureId;
     private Long destinationId;
-    private DateTime date;
+    private DepartureDate date;
     
     private final OnItemClickListener destinationItemClick = new OnItemClickListener() {
         @Override
@@ -88,7 +89,7 @@ public class IntercityLinesFragment extends Fragment {
         
     }
     
-    private void showTimetable(Long deparetureId, Long destinationId, DateTime date) {        
+    private void showTimetable(Long deparetureId, Long destinationId, DepartureDate date) {        
         // get the listview
         ExpandableListView expListView = (ExpandableListView) getView().findViewById(R.id.lvExp);
         List<CarrierLine> lines;
@@ -170,7 +171,7 @@ public class IntercityLinesFragment extends Fragment {
         changeDate.setOnClickListener(changeDateClick);
         
         // init date edit
-        EditText editDate = (EditText) rootView.findViewById(R.id.datePickEdit);
+        editDate = (EditText) rootView.findViewById(R.id.datePickEdit);
         editDate.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -178,13 +179,11 @@ public class IntercityLinesFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (s.length() > 0) {
-                    //get date
-                    date = INPUT_DATETIME_FORMATTER.withZoneUTC().parseDateTime(s.toString());
-
-                    // show timetable
+                if (s.length() > 0 && editDate.getTag() != null) {
+                    date = (DepartureDate) editDate.getTag();
                     if (departureId != null && destinationId != null) {
-                        showTimetable(departureId, destinationId, date);                    
+                        // show timetable
+                        showTimetable(departureId, destinationId, date);
                     }
                 }
             }
