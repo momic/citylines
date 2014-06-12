@@ -28,10 +28,12 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
  
     private final Context context;
     private final List<CarrierLine> carrierLines; // header titles
+    private final LayoutInflater inflater;
  
     public ExpandableListAdapter(Context context, List<CarrierLine> carrierLines) {
         this.context = context;
         this.carrierLines = carrierLines;
+        this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
     
     @Override
@@ -51,59 +53,52 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
     public View getChildView(int groupPosition, final int childPosition,
             boolean isLastChild, View convertView, ViewGroup parent) {
         
-        Object viewHolder;
-        if (convertView == null) {
-            LayoutInflater infalInflater = (LayoutInflater) this.context
-                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            
-            int layout;
-            if (childPosition == 0) {
-                layout = R.layout.item_header_carrier_line_departure;
-                viewHolder = new ChildHeaderViewHolder();
-            } else {
-                layout = R.layout.item_carrier_line_departure;
-                viewHolder = new ChildViewHolder();
-            }
-            convertView = infalInflater.inflate(layout, null);
-            
-            if (childPosition == 0) {
-                ChildHeaderViewHolder headerViewHolder = (ChildHeaderViewHolder) viewHolder;
-                headerViewHolder.station = (TextView) convertView.findViewById(R.id.clStation);
-                headerViewHolder.gate = (TextView) convertView.findViewById(R.id.clGate);
-                headerViewHolder.phone = (TextView) convertView.findViewById(R.id.clPhone);
-            } else {
-                ChildViewHolder childViewHolder = (ChildViewHolder) viewHolder;
-                childViewHolder.departure = (TextView) convertView.findViewById(R.id.cldDepartureTime);
-                childViewHolder.arrival = (TextView) convertView.findViewById(R.id.cldArrivalTime);
-            }
-            
-            // Optimize findViewById calls, use Tag if converterView is not null
-            convertView.setTag(viewHolder);
-        } else {
-            viewHolder = convertView.getTag();
-        } 
-
         if (childPosition == 0) {
-            final CarrierLine group = (CarrierLine) getGroup(groupPosition);
-            ChildHeaderViewHolder headerViewHolder = (ChildHeaderViewHolder) viewHolder;
-            headerViewHolder.station.setText(
-                    context.getResources().getString(R.string.station) 
-                            + " " + group.getDepartureStation());
-            headerViewHolder.gate.setText(
-                    context.getResources().getString(R.string.gate) 
-                            + " " + group.getGate());
-            headerViewHolder.phone.setText(
-                    context.getResources().getString(R.string.phone) 
-                            + " " + group.getPhone());
-        } else {
-            final CarrierLineDeparture child = (CarrierLineDeparture) 
-                    getChild(groupPosition, childPosition);
+
+            ChildHeaderViewHolder viewHolder;
+            if (convertView == null || !(convertView.getTag() instanceof ChildHeaderViewHolder)) {
+                viewHolder = new ChildHeaderViewHolder();
+                convertView = inflater.inflate(R.layout.item_header_carrier_line_departure, null);
+
+                viewHolder.station = (TextView) convertView.findViewById(R.id.clStation);
+                viewHolder.gate = (TextView) convertView.findViewById(R.id.clGate);
+                viewHolder.phone = (TextView) convertView.findViewById(R.id.clPhone);
+
+                convertView.setTag(viewHolder);
+            } else {
+                viewHolder = (ChildHeaderViewHolder) convertView.getTag();
+            }
             
-            ChildViewHolder childViewHolder = (ChildViewHolder) viewHolder;
-            childViewHolder.departure.setText(child.getDepartureTime());
-            childViewHolder.arrival.setText(child.getArrivalTime());            
+            final CarrierLine group = (CarrierLine) getGroup(groupPosition);
+            viewHolder.station.setText(context.getResources().getString(R.string.station) 
+                        + " " + group.getDepartureStation());
+            viewHolder.gate.setText(context.getResources().getString(R.string.gate) 
+                        + " " + group.getGate());
+            viewHolder.phone.setText(context.getResources().getString(R.string.phone)
+                    + " " + group.getPhone());   
+            
+            return convertView;
         }
         
+        ChildViewHolder viewHolder;
+        if (convertView == null || !(convertView.getTag() instanceof ChildViewHolder)) {
+            viewHolder = new ChildViewHolder();
+            convertView = inflater.inflate(R.layout.item_carrier_line_departure, null);
+
+            viewHolder.departure = (TextView) convertView.findViewById(R.id.cldDepartureTime);
+            viewHolder.arrival = (TextView) convertView.findViewById(R.id.cldArrivalTime);
+
+            convertView.setTag(viewHolder);
+        } else {
+            viewHolder = (ChildViewHolder) convertView.getTag();
+        }        
+        
+        final CarrierLineDeparture child = (CarrierLineDeparture) 
+            getChild(groupPosition, childPosition);                
+
+        viewHolder.departure.setText(child.getDepartureTime());
+        viewHolder.arrival.setText(child.getArrivalTime());            
+            
         return convertView;
     }
  

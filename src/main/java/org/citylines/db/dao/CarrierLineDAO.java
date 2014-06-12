@@ -80,7 +80,7 @@ public class CarrierLineDAO extends DAO {
     private List<CarrierLine> prepareAcceptableLines(Cursor c, Long departureCityId, DepartureDate date) {
         final List<String> departureTimes = new LinkedList<String>();
         final List<String> arrivalTimes = new LinkedList<String>();
-        final List<CarrierLineDeparture> timetable = new ArrayList<CarrierLineDeparture>();
+        List<CarrierLineDeparture> timetable = new ArrayList<CarrierLineDeparture>();
         final List<CarrierLine> carrierLines = new ArrayList<CarrierLine>();
         
         String departureStation = null;
@@ -95,7 +95,7 @@ public class CarrierLineDAO extends DAO {
         String contactPhone = c.getString(c.getColumnIndex("contactPhone"));
         
         String dateTimeColumn = (isDeparture) ? "departureTime" : "returnTime";
-        //DateTime result =  DB_DATETIME_FORMATTER.withZoneUTC().parseDateTime(c.getString(c.getColumnIndex(dateTimeColumn)));
+        
         int offset = c.getInt(c.getColumnIndex(dateTimeColumn));
         DepartureDate carrierLineTime = date.plus(offset);
         String sCarrierLineTime = carrierLineTime.toString(OUTPUT_DATETIME_FORMATTER);
@@ -123,7 +123,7 @@ public class CarrierLineDAO extends DAO {
                 
                 departureTimes.clear();
                 arrivalTimes.clear();
-                timetable.clear();
+                timetable = new ArrayList<CarrierLineDeparture>();
                 
                 carrierLineId = c.getLong(c.getColumnIndex("carrierLineId"));
                 carrier = c.getString(c.getColumnIndex("carrierName"));
