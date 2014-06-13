@@ -82,8 +82,9 @@ public class CityLinesFragment extends Fragment implements OnClickListener {
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(final View v) {
         if (displayGpsStatus()) {
+            v.setEnabled(false);
             pb.setVisibility(View.VISIBLE);
             locationListener = new MyLocationListener();
             final Looper myLooper = Looper.myLooper();
@@ -97,6 +98,7 @@ public class CityLinesFragment extends Fragment implements OnClickListener {
                     if (!locationAquired) {
                         showGPSUnavailableAlert();
                     }
+                    v.setEnabled(true);
                 }
             }, 20000);
         } else {
@@ -178,7 +180,6 @@ public class CityLinesFragment extends Fragment implements OnClickListener {
         @Override
         public void onLocationChanged(Location loc) {
             locationAquired = (loc != null);
-            pb.setVisibility(View.INVISIBLE);
             if (locationAquired) {
                 showNearbyStations(loc);
             } else {

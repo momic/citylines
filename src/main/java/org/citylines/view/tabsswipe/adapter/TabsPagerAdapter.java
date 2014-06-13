@@ -10,8 +10,11 @@ import org.citylines.view.tabsswipe.CityLinesFragment;
  
 public class TabsPagerAdapter extends FragmentPagerAdapter {
     
-    public TabsPagerAdapter(FragmentManager fm) {
+    private final int count;
+    
+    public TabsPagerAdapter(FragmentManager fm, int count) {
         super(fm);
+        this.count = count;
     }
  
     @Override
@@ -38,7 +41,7 @@ public class TabsPagerAdapter extends FragmentPagerAdapter {
     @Override
     public int getCount() {
         // get item count - equal to number of tabs
-        return 4;
+        return count;
     }
  
 }

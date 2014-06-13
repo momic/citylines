@@ -28,9 +28,18 @@ public class SelectDateFragment extends DialogFragment implements DatePickerDial
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+        // Get dateEdit inside parent
+        Fragment parent = getTargetFragment();
         
+        String dateEditId = getArguments().getString(DATE_EDIT_ID);
+        int resId = getResources().getIdentifier(dateEditId, "id", parent.getActivity().getPackageName());
+        dateEdit = (EditText) parent.getView().findViewById(resId);        
+        
+        // DAO object
         holidayDAO = (CalendarDAO) DAOFactory.build(DAOType.HOLIDAY_DAO, getActivity());
         
+        // Show dialog with current date
         final Calendar calendar = Calendar.getInstance();
         int yy = calendar.get(Calendar.YEAR);
         int mm = calendar.get(Calendar.MONTH);
@@ -41,13 +50,6 @@ public class SelectDateFragment extends DialogFragment implements DatePickerDial
     
     @Override
     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-        
-        // TODO: optimize this not to call findViewById on every date set
-        Fragment parent = getTargetFragment();
-        
-        String dateEditId = getArguments().getString(DATE_EDIT_ID);
-        int resId = getResources().getIdentifier(dateEditId, "id", parent.getActivity().getPackageName());
-        dateEdit = (EditText) parent.getView().findViewById(resId);        
         
         // get DateTime at StartOfDay for current date, including user's TimeZone
         final LocalDateTime currentDate = new LocalDate(year, monthOfYear+1, dayOfMonth).toLocalDateTime(LocalTime.MIDNIGHT);

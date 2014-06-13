@@ -21,7 +21,7 @@ import org.citylines.view.tabsswipe.adapter.TabsPagerAdapter;
 
 public class MainActivity extends FragmentActivity implements
         ActionBar.TabListener {
-    
+     
     // DAO handler
     private LocationDAO locationDAO;
  
@@ -61,7 +61,7 @@ public class MainActivity extends FragmentActivity implements
         tabs = getResources().getStringArray(R.array.tabs_array);
         
         setContentView(R.layout.main);
-        
+              
         // init dao handlers
         this.locationDAO = (LocationDAO) DAOFactory.build(DAOType.LOCATION_DAO, this);
         
@@ -69,12 +69,13 @@ public class MainActivity extends FragmentActivity implements
         final CurrentLocationParams clp = (CurrentLocationParams) 
                 LocationParamsFactory.build(LOCATION_PARAMS_CURRENT);
         Cursor c = locationDAO.getCurrentLocation(clp);
-        setTitle(getResources().getString(R.string.app_name) + ": " + c.getString(c.getColumnIndex("name")));
+        setTitle(getResources().getString(R.string.app_name) 
+                + ": " + c.getString(c.getColumnIndex("name")));
         
         // Initilization
         viewPager = (ViewPager) findViewById(R.id.pager);
         actionBar = getActionBar();
-        mAdapter = new TabsPagerAdapter(getSupportFragmentManager());
+        mAdapter = new TabsPagerAdapter(getSupportFragmentManager(), tabs.length);
  
         viewPager.setAdapter(mAdapter);
         actionBar.setHomeButtonEnabled(false);
@@ -84,7 +85,7 @@ public class MainActivity extends FragmentActivity implements
         for (String tab_name : tabs) {
             actionBar.addTab(actionBar.newTab().setText(tab_name.toUpperCase(Locale.US))
                     .setTabListener(this));
-        }
+        }    
         
         /**
          * on swiping the viewpager make respective tab selected
@@ -107,7 +108,7 @@ public class MainActivity extends FragmentActivity implements
             }
         });        
     }
-
+    
     @Override
     public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
         // on tab selected
