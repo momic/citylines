@@ -80,9 +80,15 @@ public class CityLinesFragment extends Fragment implements OnClickListener {
             alertbox("Can't get GPS lock.", "Check GPS and try again.", false);
         }
     }
+    
+    private void enableRefreshControls() {
+        locationManager.removeUpdates(locationListener);
+        pb.setVisibility(View.INVISIBLE);
+        btnGetLocation.setEnabled(true);        
+    }
 
     @Override
-    public void onClick(final View v) {
+    public void onClick(View v) {
         if (displayGpsStatus()) {
             v.setEnabled(false);
             pb.setVisibility(View.VISIBLE);
@@ -93,12 +99,11 @@ public class CityLinesFragment extends Fragment implements OnClickListener {
             myHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    pb.setVisibility(View.INVISIBLE);
-                    locationManager.removeUpdates(locationListener);
+                    enableRefreshControls();
                     if (!locationAquired) {
                         showGPSUnavailableAlert();
                     }
-                    v.setEnabled(true);
+                    
                 }
             }, 20000);
         } else {
@@ -179,6 +184,8 @@ public class CityLinesFragment extends Fragment implements OnClickListener {
         
         @Override
         public void onLocationChanged(Location loc) {
+            enableRefreshControls();
+            
             locationAquired = (loc != null);
             if (locationAquired) {
                 showNearbyStations(loc);
