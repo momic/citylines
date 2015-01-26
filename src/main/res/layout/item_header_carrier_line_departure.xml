@@ -10,7 +10,9 @@
         android:layout_height="wrap_content"
         android:textSize="16sp"
         android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"/>
+        android:layout_marginRight="20dp"        
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"/>
     <LinearLayout 
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -22,7 +24,9 @@
             android:layout_weight="1"
             android:textSize="16sp"
             android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"/>
+            android:layout_marginRight="20dp"            
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"/>
         <TextView
             android:id="@+id/clPhone"
             android:layout_width="wrap_content"
@@ -30,7 +34,9 @@
             android:layout_weight="1"
             android:textSize="16sp"
             android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"/>
+            android:layout_marginRight="20dp"            
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"/>
     </LinearLayout>    
     <LinearLayout 
         android:layout_width="match_parent"
@@ -44,7 +50,9 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginLeft="20dp"
-            android:layout_marginRight="10dp"
+            android:layout_marginRight="10dp"            
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="10dp"
             android:textSize="18sp"
             android:text="@string/departures"/>
         <TextView
@@ -53,7 +61,9 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginLeft="20dp"
-            android:layout_marginRight="10dp"
+            android:layout_marginRight="10dp"            
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="10dp"
             android:textSize="18sp"
             android:text="@string/arrivals"/>
     </LinearLayout>    

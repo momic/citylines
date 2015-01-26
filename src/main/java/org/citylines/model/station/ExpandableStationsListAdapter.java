@@ -87,7 +87,7 @@ public class ExpandableStationsListAdapter extends BaseExpandableListAdapter {
         if (convertView == null) {            
             LayoutInflater infalInflater = (LayoutInflater) this.context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = infalInflater.inflate(R.layout.group_station, null);
+            convertView = infalInflater.inflate(R.layout.group_station, parent, false);
             
             groupViewHolder = new GroupViewHolder();
             
@@ -111,7 +111,7 @@ public class ExpandableStationsListAdapter extends BaseExpandableListAdapter {
         if (convertView == null) {            
             LayoutInflater infalInflater = (LayoutInflater) this.context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = infalInflater.inflate(R.layout.item_station_carrier_line, null);
+            convertView = infalInflater.inflate(R.layout.item_station_carrier_line, parent, false);
             
             childViewHolder = new ChildViewHolder();
             

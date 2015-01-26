@@ -11,7 +11,9 @@
         android:textSize="18sp"
         android:layout_weight="1"
         android:layout_marginLeft="30dp"
-        android:layout_marginRight="20dp"/>
+        android:layout_marginRight="20dp"        
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="20dp"/>
     <TextView
         android:id="@+id/sclDepartureFrom"
         android:layout_width="wrap_content"
@@ -19,23 +21,29 @@
         android:textSize="16sp"
         android:layout_weight="1"
         android:layout_marginLeft="30dp"
-        android:layout_marginRight="20dp"/>    
+        android:layout_marginRight="20dp"        
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="20dp"/>    
     <TextView
         android:id="@+id/sclDepartureTimes"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="right"
+        android:gravity="end"
         android:textSize="18sp"
         android:layout_marginLeft="30dp"
-        android:layout_marginRight="20dp"/>    
+        android:layout_marginRight="20dp"        
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="20dp"/>    
     <TextView
         android:id="@+id/sclDepartureDistance"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="right"
+        android:gravity="end"
         android:textSize="16sp"
         android:layout_marginLeft="30dp"
-        android:layout_marginRight="20dp"/>    
+        android:layout_marginRight="20dp"        
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="20dp"/>    
     <TextView
         android:id="@+id/sclReturnFrom"
         android:layout_width="wrap_content"
@@ -43,21 +51,27 @@
         android:textSize="16sp"
         android:layout_weight="1"
         android:layout_marginLeft="30dp"
-        android:layout_marginRight="20dp"/>
+        android:layout_marginRight="20dp"        
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="20dp"/>
     <TextView
         android:id="@+id/sclReturnTimes"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="right"
+        android:gravity="end"
         android:textSize="18sp"
         android:layout_marginLeft="30dp"
-        android:layout_marginRight="20dp"/>
+        android:layout_marginRight="20dp"        
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="20dp"/>
     <TextView
         android:id="@+id/sclReturnDistance"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="right"
+        android:gravity="end"
         android:textSize="16sp"
         android:layout_marginLeft="30dp"
-        android:layout_marginRight="20dp"/>        
+        android:layout_marginRight="20dp"        
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="20dp"/>        
 </LinearLayout>

@@ -58,7 +58,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
             ChildHeaderViewHolder viewHolder;
             if (convertView == null || !(convertView.getTag() instanceof ChildHeaderViewHolder)) {
                 viewHolder = new ChildHeaderViewHolder();
-                convertView = inflater.inflate(R.layout.item_header_carrier_line_departure, null);
+                convertView = inflater.inflate(R.layout.item_header_carrier_line_departure, parent, false);
 
                 viewHolder.station = (TextView) convertView.findViewById(R.id.clStation);
                 viewHolder.gate = (TextView) convertView.findViewById(R.id.clGate);
@@ -83,7 +83,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         ChildViewHolder viewHolder;
         if (convertView == null || !(convertView.getTag() instanceof ChildViewHolder)) {
             viewHolder = new ChildViewHolder();
-            convertView = inflater.inflate(R.layout.item_carrier_line_departure, null);
+            convertView = inflater.inflate(R.layout.item_carrier_line_departure, parent, false);
 
             viewHolder.departure = (TextView) convertView.findViewById(R.id.cldDepartureTime);
             viewHolder.arrival = (TextView) convertView.findViewById(R.id.cldArrivalTime);
@@ -130,7 +130,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         if (convertView == null) {            
             LayoutInflater infalInflater = (LayoutInflater) this.context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = infalInflater.inflate(R.layout.group_carrier_line, null);
+            convertView = infalInflater.inflate(R.layout.group_carrier_line, parent, false);
             
             groupViewHolder = new GroupViewHolder();
             
