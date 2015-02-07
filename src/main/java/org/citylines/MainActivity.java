@@ -1,7 +1,5 @@
 package org.citylines;
 
-import android.app.ActionBar;
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -10,27 +8,24 @@ import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import java.util.Locale;
 import org.citylines.db.dao.LocationDAO;
 import org.citylines.db.dao.factory.DAOFactory;
 import org.citylines.db.dao.factory.DAOType;
 import org.citylines.model.location.CurrentLocationParams;
 import org.citylines.model.location.factory.LocationParamsFactory;
 import static org.citylines.model.location.factory.LocationParamsType.LOCATION_PARAMS_CURRENT;
+import org.citylines.view.tabsswipe.layout.SlidingTabLayout;
 import org.citylines.view.tabsswipe.adapter.TabsPagerAdapter;
 
-public class MainActivity extends FragmentActivity implements
-        ActionBar.TabListener {
+public class MainActivity extends FragmentActivity {
      
     // DAO handler
     private LocationDAO locationDAO;
  
     private ViewPager viewPager;
     private TabsPagerAdapter mAdapter;
-    private ActionBar actionBar;
-    // Tab titles
-    private String[] tabs;
-    
+    private SlidingTabLayout mSlidingTabLayout;
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu items for use in the action bar
@@ -57,8 +52,9 @@ public class MainActivity extends FragmentActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
-        tabs = getResources().getStringArray(R.array.tabs_array);
+
+        // Tab titles
+        String[] tabs = getResources().getStringArray(R.array.tabs_array);
         
         setContentView(R.layout.main);
               
@@ -74,53 +70,10 @@ public class MainActivity extends FragmentActivity implements
         
         // Initilization
         viewPager = (ViewPager) findViewById(R.id.pager);
-        actionBar = getActionBar();
-        mAdapter = new TabsPagerAdapter(getSupportFragmentManager(), tabs.length);
- 
+        mAdapter = new TabsPagerAdapter(getSupportFragmentManager(), tabs);
         viewPager.setAdapter(mAdapter);
-        actionBar.setHomeButtonEnabled(false);
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);       
- 
-        // Adding Tabs
-        for (String tab_name : tabs) {
-            actionBar.addTab(actionBar.newTab().setText(tab_name.toUpperCase(Locale.US))
-                    .setTabListener(this));
-        }    
-        
-        /**
-         * on swiping the viewpager make respective tab selected
-         */
-        viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 
-            @Override
-            public void onPageSelected(int position) {
-                // on changing the page
-                // make respected tab selected
-                actionBar.setSelectedNavigationItem(position);
-            }
-
-            @Override
-            public void onPageScrolled(int arg0, float arg1, int arg2) {
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int arg0) {
-            }
-        });        
-    }
-    
-    @Override
-    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
-        // on tab selected
-        // show respected fragment view
-        viewPager.setCurrentItem(tab.getPosition());  
-    }
-
-    @Override
-    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
-    }
-
-    @Override
-    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
+        mSlidingTabLayout = (SlidingTabLayout) findViewById(R.id.sliding_tabs);
+        mSlidingTabLayout.setViewPager(viewPager);        
     }
 }

@@ -10,16 +10,16 @@ import org.citylines.view.tabsswipe.CityLinesFragment;
  
 public class TabsPagerAdapter extends FragmentPagerAdapter {
     
-    private final int count;
+    private final String[] tabs;
     
-    public TabsPagerAdapter(FragmentManager fm, int count) {
+    public TabsPagerAdapter(FragmentManager fm, String[] tabs) {
         super(fm);
-        this.count = count;
+        this.tabs  = tabs;
     }
  
     @Override
     public Fragment getItem(int index) {
- 
+        // TODO: optimize this not to create fragment if already created
         switch (index) {
         case 0:
             // City lines fragment activity
@@ -41,7 +41,11 @@ public class TabsPagerAdapter extends FragmentPagerAdapter {
     @Override
     public int getCount() {
         // get item count - equal to number of tabs
-        return count;
+        return this.tabs.length;
     }
- 
+    
+    @Override
+    public CharSequence getPageTitle(int position) {
+        return this.tabs[position];
+    }     
 }
