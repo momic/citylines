@@ -69,11 +69,13 @@ public class MainActivity extends FragmentActivity {
                 + ": " + c.getString(c.getColumnIndex("name")));
         
         // Initilization
-        viewPager = (ViewPager) findViewById(R.id.pager);
-        mAdapter = new TabsPagerAdapter(getSupportFragmentManager(), tabs);
-        viewPager.setAdapter(mAdapter);
+        if (savedInstanceState == null) {
+            viewPager = (ViewPager) findViewById(R.id.pager);
+            mAdapter = new TabsPagerAdapter(getSupportFragmentManager(), tabs);
+            viewPager.setAdapter(mAdapter);
 
-        mSlidingTabLayout = (SlidingTabLayout) findViewById(R.id.sliding_tabs);
-        mSlidingTabLayout.setViewPager(viewPager);        
+            mSlidingTabLayout = (SlidingTabLayout) findViewById(R.id.sliding_tabs);
+            mSlidingTabLayout.setViewPager(viewPager);        
+        }
     }
 }

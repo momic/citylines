@@ -19,7 +19,11 @@ public class TabsPagerAdapter extends FragmentPagerAdapter {
  
     @Override
     public Fragment getItem(int index) {
-        // TODO: optimize this not to create fragment if already created
+        /**
+         * getItem should always return new instance
+         * because it is called by instantiateItem internally
+         * which handles item caching
+         */
         switch (index) {
         case 0:
             // City lines fragment activity
