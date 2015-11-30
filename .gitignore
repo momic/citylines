@@ -1,5 +1,6 @@
 /local.properties
 /.gradle/
+/.nb-gradle/
 /build.gradle
 /build/
 /private/
